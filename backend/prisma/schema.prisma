@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+// Kullanıcılar tablosu
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  age            Int?
+  gender         String?
+  clerkUserId    String?      @unique @map("clerk_user_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  // İlişkiler
+  userForm       UserForm?
+  userAllergies  UserAllergy[]
+  mealPlans      MealPlan[]
+ 
+  @@map("users")
+}
+ 
+// Kullanıcı form bilgileri
+model UserForm {
+  id                String   @id @default(uuid()) @map("user_form_id")
+  userId            String   @unique @map("user_id")
+  currentWeight     Float    @map("current_weight")
+  targetWeight      Float    @map("target_weight")
+  height            Float
+  activityFrequency String   @map("activity_frequency")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  // İlişki
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@map("user_forms")
+}
+ 
+// Alerjiler ana tablosu
+model Allergy {
+  id             String        @id @default(uuid()) @map("allergy_id")
+  name           String        @unique @map("allergy_name")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  // İlişki
+  userAllergies  UserAllergy[]
+ 
+  @@map("allergies")
+}
+ 
+// Kullanıcı alerjileri - ilişki tablosu
+model UserAllergy {
+  id         String   @id @default(uuid()) @map("user_allergy_id")
+  userId     String   @map("user_id")
+  allergyId  String   @map("allergy_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  // İlişkiler
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allergy    Allergy  @relation(fields: [allergyId], references: [id], onDelete: Cascade)
+ 
+  @@unique([userId, allergyId])
+  @@map("user_allergies")
+}
+ 
+// Yemek planları
+model MealPlan {
+  id        String   @id @default(uuid()) @map("meal_plan_id")
+  userId    String   @map("user_id") 
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  // İlişkiler
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals     Meal[]
+  groceryItems GroceryItem[]
+ 
+  @@map("meal_plans")
+}
+ 
+// Yemekler tablosu
+model Meal {
+  id           String        @id @default(uuid()) @map("meal_id")
+  name         String        @map("meal_name")
+  mealPlanId   String        @map("meal_plan_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  // İlişkiler
+  mealPlan     MealPlan      @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  ingredients  MealIngredient[]
+  
+ 
+  @@map("meals")
+}
+ 
+// Malzemeler ana tablosu
+model Ingredient {
+  id           String        @id @default(uuid()) @map("ingredient_id")
+  name         String        @unique @map("ingredient_name")
+  caloriesPer100 Float?      @map("calories_per_100")
+  proteinPer100  Float?      @map("protein_per_100")
+  fatPer100      Float?      @map("fat_per_100")
+  carbPer100     Float?      @map("carb_per_100")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  // İlişki
+  mealIngredients MealIngredient[]
+ 
+  @@map("ingredients")
+}
+ 
+// Yemek ve malzeme ilişki tablosu
+model MealIngredient {
+  id           String     @id @default(uuid()) @map("meal_ingredient_id")
+  mealId       String     @map("meal_id")
+  ingredientId String     @map("ingredient_id")
+  quantity     Float
+  unit         String
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  // İlişkiler
+  meal         Meal       @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+ 
+  @@unique([mealId, ingredientId])
+  @@map("meal_ingredients")
+}
+ 
+// Market alışveriş öğeleri
+model GroceryItem {
+  id           String   @id @default(uuid()) @map("grocery_item_id")
+  name         String
+  quantity     Float
+  unit         String
+  mealId       String   @map("meal_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  // İlişki
+  mealPlan         MealPlan     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+ 
+  @@map("grocery_items")
+}

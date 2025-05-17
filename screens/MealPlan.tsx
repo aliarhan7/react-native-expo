@@ -43,7 +43,7 @@ const HomeScreen: React.FC = () => {
             <Text className="text-sm text-gray-600 text-center">Get personalized recommendations</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-[#F8F5FF] p-6 rounded-2xl flex-1 ml-3 items-center">
+          <TouchableOpacity onPress={() => navigation.navigate("UserMeals")} className="bg-[#F8F5FF] p-6 rounded-2xl flex-1 ml-3 items-center">
             <View className="bg-[#8A47EB] w-12 h-12 rounded-full items-center justify-center mb-4">
               <Ionicons name="list" size={24} color="white" />
             </View>
