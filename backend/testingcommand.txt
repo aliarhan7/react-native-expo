@@ -1,0 +1,1 @@
+curl -X POST http://localhost:5000/saveUserMealPlanForm -H "Content-Type: application/json" -d "{\"user\":{\"name\":\"John Doe\",\"age\":30,\"gender\":\"male\",\"clerk_user_id\":\"clerk_123\"},\"form\":{\"current_weight\":80.0,\"target_weight\":75.0,\"height\":180.0,\"activity_frequency\":\"moderate\"},\"allergies\":[\"Peanuts\",\"Shellfish\"]}"

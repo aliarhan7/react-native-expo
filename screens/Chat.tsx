@@ -9,12 +9,12 @@ import {
   Platform,
   SafeAreaView,
   StatusBar,
-} from 'react-native'
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http:/localhost:5000';
 
 interface Message {
   id: string;
@@ -31,7 +31,6 @@ interface Recipe {
   tags: string[];
 }
 
-
 const TypingIndicator = () => {
   return (
     <View className="flex-row items-center p-2">
@@ -46,7 +45,7 @@ const TypingIndicator = () => {
 };
 
 const RecipeAssistantApp = () => {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -87,16 +86,31 @@ const RecipeAssistantApp = () => {
     setIsLoading(true);
 
     try {
-      // Keep your original API call for recipes
-      const response = await axios.post(`${API_URL}/recipe`, {
+      const response = await axios.post(`${API_URL}/chatbot`, {
         userInput: text,
+        clerk_user_id: 'clerk_123' // Replace with actual Clerk user ID
       });
+
+      let botText;
+      let botOptions: string[] = [];
+      
+      if (response.data.name) {
+        // Handle recipe response
+        botText = JSON.stringify(response.data);
+      } else if (response.data.text) {
+        // Handle conversational response
+        botText = response.data.text;
+        botOptions = response.data.options || [];
+      } else {
+        botText = 'Üzgünüm, bir hata oluştu.';
+      }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.data.recipe || 'Üzgünüm, bir hata oluştu.',
+        text: botText,
         isUser: false,
         timestamp: new Date(),
+        options: botOptions,
       };
 
       setMessages((prevMessages) => [...prevMessages, botMessage]);
@@ -235,7 +249,6 @@ const RecipeAssistantApp = () => {
     }
     
     // For regular messages, check if we need to show the avatar
-    // (don't show avatar for consecutive bot messages)
     if (!message.isUser && index > 0) {
       const prevMessage = messages[index - 1];
       const showAvatar = prevMessage.isUser;

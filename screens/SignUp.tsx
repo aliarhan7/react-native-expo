@@ -22,7 +22,7 @@ export default function CustomSignUp() {
     
     setLoading(true);
     try {
-      await signUp?.create({ emailAddress: email, password });
+      await signUp?.create({ emailAddress: email, password: password });
       await signUp?.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
       Alert.alert('Success', 'Verification code sent to your email');
@@ -78,38 +78,14 @@ export default function CustomSignUp() {
   };
 
   return (
-    <View className="flex-1 bg-gray-50 p-6 justify-center">
+    <View className="flex-1 bg-gray-50 p-6 justify-center -mt-10">
       {/* Header */}
       <View className="mb-12">
         <Text className="text-3xl font-bold text-gray-900">Create Account</Text>
         <Text className="text-gray-500 mt-2">Join our community today</Text>
       </View>
 
-      {/* Social Buttons */}
-      <View className="space-y-4 mb-8">
-        <TouchableOpacity
-          className="flex-row items-center justify-center bg-red-500 p-4 rounded-lg"
-          onPress={() => handleSocialAuth('google')}
-        >
-          <Ionicons name="logo-google" size={20} color="white" />
-          <Text className="text-white font-medium ml-2">Continue with Google</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          className="flex-row items-center justify-center bg-black p-4 rounded-lg"
-          onPress={() => handleSocialAuth('apple')}
-        >
-          <Ionicons name="logo-apple" size={20} color="white" />
-          <Text className="text-white font-medium ml-2">Continue with Apple</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Divider */}
-      <View className="flex-row items-center my-6">
-        <View className="flex-1 h-px bg-gray-300" />
-        <Text className="mx-4 text-gray-500">or</Text>
-        <View className="flex-1 h-px bg-gray-300" />
-      </View>
 
       {/* Email/Password Form */}
       {!pendingVerification ? (
@@ -123,7 +99,7 @@ export default function CustomSignUp() {
             autoCapitalize="none"
           />
           <TextInput
-            className="bg-white p-4 rounded-lg border border-gray-200"
+            className="bg-white p-4 rounded-lg border border-gray-200 mt-1"
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
@@ -131,7 +107,7 @@ export default function CustomSignUp() {
           />
           
           <TouchableOpacity
-            className="bg-blue-500 p-4 rounded-lg items-center"
+            className="bg-blue-500 p-4 rounded-lg items-center mt-5"
             onPress={handleEmailSignUp}
             disabled={loading}
           >
@@ -169,6 +145,29 @@ export default function CustomSignUp() {
           </TouchableOpacity>
         </View>
       )}
+            <View className="flex-row items-center my-6">
+        <View className="flex-1 h-px bg-gray-300" />
+        <Text className="mx-4 text-gray-500">or</Text>
+        <View className="flex-1 h-px bg-gray-300" />
+      </View>
+      {/* Social Buttons */}
+      <View className="space-y-4 mb-8 gap-3">
+        <TouchableOpacity
+          className="flex-row items-center justify-center bg-red-500 p-4 rounded-lg"
+          onPress={() => handleSocialAuth('google')}
+        >
+          <Ionicons name="logo-google" size={20} color="white" />
+          <Text className="text-white font-medium ml-2">Continue with Google</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="flex-row items-center justify-center bg-black p-4 rounded-lg"
+          onPress={() => handleSocialAuth('apple')}
+        >
+          <Ionicons name="logo-apple" size={20} color="white" />
+          <Text className="text-white font-medium ml-2">Continue with Apple</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Login Link */}
       <View className="mt-8 flex-row justify-center">

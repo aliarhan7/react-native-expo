@@ -9,7 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-backend/venv/
+backend/myvenv/
 backend/__pycache__/
 
 
